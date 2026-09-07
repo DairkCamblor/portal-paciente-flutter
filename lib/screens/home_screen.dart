@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'appointments_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -92,7 +93,14 @@ class HomeScreen extends StatelessWidget {
                   child: _MenuCard(
                     icon: Icons.calendar_month,
                     title: 'Mis horas',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AppointmentsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
 
