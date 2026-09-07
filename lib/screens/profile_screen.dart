@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:portal_paciente/models/patient.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final Patient patient;
+
+  const ProfileScreen({super.key, required this.patient});
 
   @override
   Widget build(BuildContext context) {
-    final Patient patient = const Patient(
-      name: 'Dairk Camblor',
-      rut: '20.885.184-5',
-      phone: '+56 9 1234 5678',
-      email: 'dairk@gmail.com',
-      address: 'Av. Ejemplo 123, Arica',
-    );
-
     return Scaffold(
       appBar: AppBar(title: const Text('Mi perfil')),
       body: SingleChildScrollView(

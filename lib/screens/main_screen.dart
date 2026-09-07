@@ -2,6 +2,7 @@ import 'profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'appointments_screen.dart';
+import 'package:portal_paciente/models/patient.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -11,6 +12,14 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final Patient patient = const Patient(
+    name: 'Dairk Camblor',
+    rut: '20.885.184-5',
+    phone: '+56 9 1234 5678',
+    email: 'dairk@gmail.com',
+    address: 'Av. Ejemplo 123, Arica',
+  );
+
   int indiceActual = 0;
 
   @override
@@ -18,7 +27,11 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: indiceActual,
-        children: const [HomeScreen(), AppointmentsScreen(), ProfileScreen()],
+        children: [
+          const HomeScreen(),
+          const AppointmentsScreen(),
+          ProfileScreen(patient: patient),
+        ],
       ),
 
       bottomNavigationBar: NavigationBar(
