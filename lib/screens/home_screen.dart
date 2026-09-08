@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'appointments_screen.dart';
+import 'exams_screen.dart';
+import 'prescriptions_screen.dart';
+import 'notifications_screen.dart';
+import 'package:portal_paciente/screens/referrals_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,8 +15,13 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Mi Portal de Salud'),
         actions: [
           IconButton(
-            onPressed: () {},
             icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -110,7 +119,14 @@ class HomeScreen extends StatelessWidget {
                   child: _MenuCard(
                     icon: Icons.science,
                     title: 'Exámenes',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ExamsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -124,7 +140,14 @@ class HomeScreen extends StatelessWidget {
                   child: _MenuCard(
                     icon: Icons.medication_outlined,
                     title: 'Recetas',
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrescriptionsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
 
@@ -132,9 +155,16 @@ class HomeScreen extends StatelessWidget {
 
                 Expanded(
                   child: _MenuCard(
-                    icon: Icons.description_outlined,
-                    title: 'Solicitudes',
-                    onTap: () {},
+                    icon: Icons.assignment_outlined,
+                    title: 'Interconsultas',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ReferralsScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

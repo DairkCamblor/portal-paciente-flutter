@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'identity_validation_screen.dart';
+import 'login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -54,7 +55,14 @@ class WelcomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
                 child: const Text('Ya tengo cuenta'),
               ),
 
