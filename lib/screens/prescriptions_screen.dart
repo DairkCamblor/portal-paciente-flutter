@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:portal_paciente/models/prescription.dart';
+
 import 'prescription_detail_screen.dart';
+
+import 'package:portal_paciente/widgets/portal_card.dart';
 
 class PrescriptionsScreen extends StatelessWidget {
   const PrescriptionsScreen({super.key});
@@ -169,17 +173,20 @@ class PrescriptionsScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final receta = recetas[index];
 
-          return _PrescriptionCard(
-            receta: receta,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PrescriptionDetailScreen(prescription: receta),
-                ),
-              );
-            },
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _PrescriptionCard(
+              prescription: receta,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PrescriptionDetailScreen(prescription: receta),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
@@ -188,173 +195,139 @@ class PrescriptionsScreen extends StatelessWidget {
 }
 
 class _PrescriptionCard extends StatelessWidget {
-  final Prescription receta;
+  final Prescription prescription;
   final VoidCallback onTap;
 
-  const _PrescriptionCard({required this.receta, required this.onTap});
+  const _PrescriptionCard({required this.prescription, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final bool hasPending = receta.pendingMedications > 0;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.medication_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 28,
-                  ),
+    final bool allDelivered = prescription.pendingMedications == 0;
+
+    return PortalCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Receta médica',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'N.º ${receta.id}',
-                        style: TextStyle(color: Colors.grey.shade700),
-                      ),
-                    ],
-                  ),
+                child: Icon(
+                  Icons.medication_outlined,
+                  color: colorScheme.primary,
+                  size: 28,
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            _InfoRow(
-              icon: Icons.calendar_today_outlined,
-              label: 'Fecha',
-              value: receta.creationDate,
-            ),
-
-            const SizedBox(height: 8),
-
-            _InfoRow(
-              icon: Icons.person_outline,
-              label: 'Profesional',
-              value: receta.professional,
-            ),
-
-            const SizedBox(height: 8),
-
-            _InfoRow(
-              icon: Icons.location_on_outlined,
-              label: 'Local',
-              value: receta.location,
-            ),
-
-            const SizedBox(height: 16),
-
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: hasPending
-                    ? Colors.orange.withValues(alpha: 0.08)
-                    : Colors.green.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    hasPending
-                        ? Icons.pending_actions_outlined
-                        : Icons.check_circle_outline,
-                    color: hasPending
-                        ? Colors.orange.shade800
-                        : Colors.green.shade700,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '${receta.deliveredMedications} de '
-                      '${receta.totalMedications} medicamentos '
-                      'completamente entregados',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: hasPending
-                            ? Colors.orange.shade900
-                            : Colors.green.shade800,
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Receta N.º ${prescription.id}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
 
-            const SizedBox(height: 12),
+                    const SizedBox(height: 5),
 
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: onTap,
-                icon: const Icon(Icons.visibility_outlined),
-                label: const Text('Ver detalle'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 10),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: DefaultTextStyle.of(context).style,
-              children: [
-                TextSpan(
-                  text: '$label: ',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                    Text(
+                      prescription.requestDate,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
                 ),
-                TextSpan(text: value),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          const Divider(),
+
+          const SizedBox(height: 12),
+
+          Text(
+            prescription.professional,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+
+          const SizedBox(height: 5),
+
+          Text(
+            prescription.location,
+            style: const TextStyle(fontSize: 14, color: Colors.black54),
+          ),
+
+          const SizedBox(height: 16),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: allDelivered
+                  ? Colors.green.withValues(alpha: 0.10)
+                  : Colors.orange.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  allDelivered
+                      ? Icons.check_circle_outline
+                      : Icons.pending_actions_outlined,
+                  size: 22,
+                  color: allDelivered ? Colors.green : Colors.orange,
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Text(
+                    '${prescription.deliveredMedications} '
+                    'de ${prescription.totalMedications} '
+                    'medicamentos completamente entregados',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: allDelivered
+                          ? Colors.green.shade800
+                          : Colors.orange.shade800,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ],
+
+          const SizedBox(height: 12),
+
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: onTap,
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text('Ver detalle'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

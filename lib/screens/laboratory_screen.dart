@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:portal_paciente/models/exam.dart';
 import 'pdf_viewer_screen.dart';
+import '../widgets/portal_card.dart';
 
 class LaboratoryScreen extends StatelessWidget {
   const LaboratoryScreen({super.key});
@@ -104,52 +106,57 @@ class _LaboratoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return PortalCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  const Icon(Icons.science_outlined, size: 28),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Examen de laboratorio',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.science_outlined,
+                  size: 28,
+                  color: colorScheme.primary,
+                ),
               ),
-
-              const SizedBox(height: 20),
-
-              _InfoRow(label: 'N.º de examen', value: numero),
-
-              _InfoRow(label: 'Fecha', value: fecha),
-
-              _InfoRow(label: 'Médico solicitante', value: medico),
-
-              _InfoRow(label: 'Servicio', value: servicio),
-
-              _InfoRow(label: 'Atención', value: atencion),
-
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: onTap,
-                  icon: const Icon(Icons.picture_as_pdf_outlined),
-                  label: const Text('Ver resultado'),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Text(
+                  'Examen de laboratorio',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
           ),
-        ),
+
+          const SizedBox(height: 20),
+
+          _InfoRow(label: 'N.º de examen', value: numero),
+          _InfoRow(label: 'Fecha', value: fecha),
+          _InfoRow(label: 'Médico solicitante', value: medico),
+          _InfoRow(label: 'Servicio', value: servicio),
+          _InfoRow(label: 'Atención', value: atencion),
+
+          const SizedBox(height: 8),
+
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onTap,
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              label: const Text('Ver resultado'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -163,6 +170,8 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -172,7 +181,10 @@ class _InfoRow extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontSize: 14,
+              ),
             ),
           ),
           Expanded(

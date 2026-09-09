@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:portal_paciente/models/referral.dart';
+import '../widgets/portal_card.dart';
 
 class FirstAttentionScreen extends StatelessWidget {
   const FirstAttentionScreen({super.key});
@@ -52,7 +54,7 @@ class FirstAttentionScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Primera atención')),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         itemCount: derivaciones.length,
         itemBuilder: (context, index) {
           final derivacion = derivaciones[index];
@@ -140,125 +142,159 @@ class _ReferralCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final bool agendado = referral.status == 'Agendado';
 
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
+    return PortalCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ENCABEZADO
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      Icons.medical_services_outlined,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          referral.name,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          referral.type,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  _StatusBadge(status: referral.status),
-                ],
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.medical_services_outlined,
+                  size: 28,
+                  color: colorScheme.primary,
+                ),
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(width: 14),
 
-              const Divider(),
-
-              const SizedBox(height: 12),
-
-              if (agendado) ...[
-                const Text(
-                  'Fecha de atención',
-                  style: TextStyle(fontSize: 13, color: Colors.black54),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      referral.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      referral.type,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
+              ),
+
+              const SizedBox(width: 8),
+
+              _StatusBadge(status: referral.status),
+            ],
+          ),
+
+          const SizedBox(height: 18),
+
+          const Divider(),
+
+          const SizedBox(height: 12),
+
+          // FECHA DE ATENCIÓN
+          if (agendado) ...[
+            Text(
+              'Fecha de atención',
+              style: TextStyle(
+                fontSize: 13,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              '${referral.appointmentDate} • '
+              '${referral.appointmentTime}',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 12),
+          ] else ...[
+            Row(
+              children: [
+                Icon(
+                  Icons.event_busy_outlined,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  '${referral.appointmentDate} • ${referral.appointmentTime}',
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                  'Aún no agendada',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(height: 12),
               ],
+            ),
 
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_outlined, size: 18),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Solicitud: ${referral.requestDate}',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ],
+            const SizedBox(height: 12),
+          ],
+
+          // FECHA DE SOLICITUD
+          Row(
+            children: [
+              Icon(
+                Icons.calendar_today_outlined,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
               ),
-
-              const SizedBox(height: 8),
-
-              Row(
-                children: [
-                  const Icon(Icons.location_on_outlined, size: 18),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      referral.location ?? 'Aún no asignado',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(
-                  onPressed: onTap,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Ver detalle'),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Solicitud: ${referral.requestDate}',
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
             ],
           ),
-        ),
+
+          const SizedBox(height: 8),
+
+          // LUGAR
+          Row(
+            children: [
+              Icon(
+                Icons.location_on_outlined,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  referral.location ?? 'Aún no asignado',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: onTap,
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text('Ver detalle'),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -271,16 +307,18 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final statusColor = _getStatusColor(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: _statusColor.withValues(alpha: 0.12),
+        color: statusColor.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         status,
         style: TextStyle(
-          color: _statusColor,
+          color: statusColor,
           fontSize: 12,
           fontWeight: FontWeight.bold,
         ),
@@ -288,18 +326,22 @@ class _StatusBadge extends StatelessWidget {
     );
   }
 
-  Color get _statusColor {
+  Color _getStatusColor(BuildContext context) {
     switch (status) {
       case 'Agendado':
         return Colors.green;
+
       case 'Pendiente':
         return Colors.orange;
+
       case 'Egresada':
         return Colors.grey;
+
       case 'Egresada - En control':
         return Colors.blue;
+
       default:
-        return Colors.grey;
+        return Theme.of(context).colorScheme.onSurfaceVariant;
     }
   }
 }
@@ -317,12 +359,14 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
+          Icon(icon, size: 22, color: colorScheme.primary),
 
           const SizedBox(width: 12),
 
@@ -332,9 +376,14 @@ class _DetailRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(fontSize: 13, color: Colors.black54),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
                   value,
                   style: const TextStyle(

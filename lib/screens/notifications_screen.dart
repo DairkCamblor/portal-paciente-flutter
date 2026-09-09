@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'package:portal_paciente/models/notification.dart';
 
 import 'appointments_screen.dart';
 import 'laboratory_screen.dart';
 import 'prescriptions_screen.dart';
+import '../widgets/portal_card.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -67,55 +69,80 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Notificaciones')),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.all(20),
         children: [
-          if (unreadCount > 0)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(16),
-              ),
+          if (unreadCount > 0) ...[
+            PortalCard(
               child: Row(
                 children: [
-                  Icon(
-                    Icons.notifications_active_outlined,
-                    size: 28,
-                    color: Theme.of(context).colorScheme.primary,
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      Icons.notifications_active_outlined,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Expanded(
-                    child: Text(
-                      'Tienes $unreadCount '
-                      '${unreadCount == 1 ? 'notificación nueva' : 'notificaciones nuevas'}',
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$unreadCount '
+                          '${unreadCount == 1 ? 'notificación nueva' : 'notificaciones nuevas'}',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Tienes información nueva para revisar.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 20),
+          ],
 
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
+          const Text(
+            'Tus notificaciones',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
 
-                return _NotificationCard(
-                  notification: notification,
-                  onTap: () {
-                    _openNotification(context, notification);
-                  },
-                );
-              },
+          const SizedBox(height: 12),
+
+          ...notifications.map(
+            (notification) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: _NotificationCard(
+                notification: notification,
+                onTap: () {
+                  _openNotification(context, notification);
+                },
+              ),
             ),
           ),
+
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -126,7 +153,7 @@ class NotificationsScreen extends StatelessWidget {
       case NotificationType.appointment:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AppointmentsScreen()),
+          MaterialPageRoute(builder: (context) => const AppointmentsScreen()),
         );
         break;
 
@@ -134,14 +161,14 @@ class NotificationsScreen extends StatelessWidget {
       case NotificationType.prescription:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PrescriptionsScreen()),
+          MaterialPageRoute(builder: (context) => const PrescriptionsScreen()),
         );
         break;
 
       case NotificationType.exam:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => LaboratoryScreen()),
+          MaterialPageRoute(builder: (context) => const LaboratoryScreen()),
         );
         break;
 
@@ -189,91 +216,91 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 14),
-      elevation: notification.read ? 1 : 3,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  _getIcon(),
-                  size: 28,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+    final colorScheme = Theme.of(context).colorScheme;
 
-              const SizedBox(width: 14),
+    return PortalCard(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: notification.read
+                  ? colorScheme.surfaceContainerHighest
+                  : colorScheme.primary.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              _getIcon(),
+              size: 28,
+              color: notification.read
+                  ? colorScheme.onSurfaceVariant
+                  : colorScheme.primary,
+            ),
+          ),
 
-              Expanded(
-                child: Column(
+          const SizedBox(width: 14),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            notification.title,
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: notification.read
-                                  ? FontWeight.w600
-                                  : FontWeight.bold,
-                            ),
-                          ),
+                    Expanded(
+                      child: Text(
+                        notification.title,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: notification.read
+                              ? FontWeight.w600
+                              : FontWeight.bold,
                         ),
-
-                        if (!notification.read)
-                          Container(
-                            width: 10,
-                            height: 10,
-                            margin: const EdgeInsets.only(left: 8, top: 5),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 7),
-
-                    Text(
-                      notification.message,
-                      style: TextStyle(
-                        fontSize: 15,
-                        height: 1.4,
-                        color: Colors.grey.shade800,
                       ),
                     ),
 
-                    const SizedBox(height: 10),
-
-                    Text(
-                      notification.date,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
+                    if (!notification.read) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 10,
+                        height: 10,
+                        margin: const EdgeInsets.only(top: 5),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 7),
+
+                Text(
+                  notification.message,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.4,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+                  notification.date,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:portal_paciente/screens/first_attention_screen.dart';
 import 'package:portal_paciente/screens/procedures_screen.dart';
+import 'package:portal_paciente/screens/kinesiology_screen.dart';
+import '../widgets/portal_card.dart';
 
 class ReferralsScreen extends StatelessWidget {
   const ReferralsScreen({super.key});
@@ -12,12 +15,20 @@ class ReferralsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text(
-            'Consulta el estado de tus derivaciones y solicitudes de atención.',
-            style: TextStyle(fontSize: 16, color: Colors.black54),
+          Text(
+            'Mis derivaciones',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
-
-          const SizedBox(height: 24),
+          const SizedBox(height: 6),
+          Text(
+            'Consulta el estado de tus derivaciones y solicitudes de atención.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 20),
 
           _ReferralCategoryCard(
             icon: Icons.medical_services_outlined,
@@ -48,6 +59,22 @@ class ReferralsScreen extends StatelessWidget {
               );
             },
           ),
+
+          const SizedBox(height: 16),
+
+          _ReferralCategoryCard(
+            icon: Icons.directions_run_outlined,
+            title: 'Kinesiología',
+            subtitle: 'Sesiones de rehabilitación',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const KinesiologyScreen(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -69,60 +96,50 @@ class _ReferralCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  icon,
-                  size: 30,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+    final colorScheme = Theme.of(context).colorScheme;
 
-              const SizedBox(width: 16),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const Icon(Icons.chevron_right, size: 28),
-            ],
+    return PortalCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, size: 30, color: colorScheme.primary),
           ),
-        ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.chevron_right,
+            size: 28,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ],
       ),
     );
   }
