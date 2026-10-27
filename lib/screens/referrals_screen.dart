@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:portal_paciente/screens/first_attention_screen.dart';
 import 'package:portal_paciente/screens/procedures_screen.dart';
 import 'package:portal_paciente/screens/kinesiology_screen.dart';
-import '../widgets/portal_card.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/category_card.dart';
+import '../widgets/screen_header.dart';
 
 class ReferralsScreen extends StatelessWidget {
   const ReferralsScreen({super.key});
@@ -13,24 +15,13 @@ class ReferralsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Mis Derivaciones')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.screenPadding,
         children: [
-          Text(
-            'Mis derivaciones',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 6),
-          Text(
+          const ScreenHeader.intro(
             'Consulta el estado de tus derivaciones y solicitudes de atención.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
           ),
-          const SizedBox(height: 20),
 
-          _ReferralCategoryCard(
+          CategoryCard(
             icon: Icons.medical_services_outlined,
             title: 'Primera atención',
             subtitle: 'Especialidades médicas',
@@ -44,9 +35,9 @@ class ReferralsScreen extends StatelessWidget {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
 
-          _ReferralCategoryCard(
+          CategoryCard(
             icon: Icons.biotech_outlined,
             title: 'Procedimientos',
             subtitle: 'Exámenes y procedimientos',
@@ -60,9 +51,9 @@ class ReferralsScreen extends StatelessWidget {
             },
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
 
-          _ReferralCategoryCard(
+          CategoryCard(
             icon: Icons.directions_run_outlined,
             title: 'Kinesiología',
             subtitle: 'Sesiones de rehabilitación',
@@ -74,70 +65,6 @@ class ReferralsScreen extends StatelessWidget {
                 ),
               );
             },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReferralCategoryCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ReferralCategoryCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return PortalCard(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, size: 30, color: colorScheme.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.chevron_right,
-            size: 28,
-            color: colorScheme.onSurfaceVariant,
           ),
         ],
       ),

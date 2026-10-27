@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/detail_sheet.dart';
+import '../widgets/icon_tile.dart';
+import '../widgets/info_row.dart';
 import '../widgets/portal_card.dart';
+import '../widgets/screen_header.dart';
+import '../widgets/section_header.dart';
+import '../widgets/status_badge.dart';
 
 class AuthorizationsScreen extends StatelessWidget {
   const AuthorizationsScreen({super.key});
@@ -41,38 +49,26 @@ class AuthorizationsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Autorizaciones – Firmas')),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.screenPadding,
         children: [
-          Text(
+          const ScreenHeader(
             'Mis documentos',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            subtitle:
+                'Revisa los documentos asociados a tus atenciones de salud.',
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Revisa los documentos asociados a tus atenciones de salud.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-
-          const SizedBox(height: 24),
 
           // ─────────────────────────────────────
           // DOCUMENTOS PENDIENTES
           // ─────────────────────────────────────
           if (documentosPendientes.isNotEmpty) ...[
-            const _SectionTitle(
+            const SectionHeader(
+              'Documentos pendientes',
               icon: Icons.pending_actions_outlined,
-              title: 'Documentos pendientes',
             ),
-
-            const SizedBox(height: 12),
 
             ...documentosPendientes.map(
               (documento) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                 child: _PendingDocumentCard(
                   document: documento,
                   onTap: () {
@@ -87,18 +83,16 @@ class AuthorizationsScreen extends StatelessWidget {
           // DOCUMENTOS FIRMADOS
           // ─────────────────────────────────────
           if (documentosFirmados.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
 
-            const _SectionTitle(
+            const SectionHeader(
+              'Documentos firmados',
               icon: Icons.check_circle_outline,
-              title: 'Documentos firmados',
             ),
-
-            const SizedBox(height: 12),
 
             ...documentosFirmados.map(
               (documento) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: _SignedDocumentCard(
                   document: documento,
                   onTap: () {
@@ -109,15 +103,12 @@ class AuthorizationsScreen extends StatelessWidget {
             ),
           ],
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           Text(
             'La disponibilidad y estado de los documentos dependerá de la información registrada en los sistemas institucionales.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -130,123 +121,59 @@ class AuthorizationsScreen extends StatelessWidget {
   ) {
     final bool firmado = document.status == 'Firmado';
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Icon(
-                        Icons.description_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        document.title,
-                        style: const TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+    showDetailSheet(
+      context,
+      title: document.title,
+      icon: Icons.description_outlined,
+      children: [
+        InfoRow(
+          icon: Icons.info_outline,
+          label: 'Estado',
+          value: document.status,
+        ),
+
+        InfoRow(
+          icon: Icons.calendar_today_outlined,
+          label: 'Fecha',
+          value: document.date,
+        ),
+
+        InfoRow(
+          icon: Icons.description_outlined,
+          label: 'Descripción',
+          value: document.description,
+        ),
+      ],
+      actions: [
+        if (firmado)
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Visualización del documento próximamente.'),
                 ),
+              );
+            },
+            icon: const Icon(Icons.visibility_outlined),
+            label: const Text('Ver documento'),
+          )
+        else
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
 
-                const SizedBox(height: 22),
-
-                _DetailRow(
-                  icon: Icons.info_outline,
-                  label: 'Estado',
-                  value: document.status,
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Proceso de autorización próximamente.'),
                 ),
-
-                _DetailRow(
-                  icon: Icons.calendar_today_outlined,
-                  label: 'Fecha',
-                  value: document.date,
-                ),
-
-                _DetailRow(
-                  icon: Icons.description_outlined,
-                  label: 'Descripción',
-                  value: document.description,
-                ),
-
-                const SizedBox(height: 4),
-
-                if (firmado)
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Visualización del documento próximamente.',
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.visibility_outlined),
-                      label: const Text('Ver documento'),
-                    ),
-                  )
-                else
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Proceso de autorización próximamente.',
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Continuar'),
-                    ),
-                  ),
-
-                const SizedBox(height: 8),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Cerrar'),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
+            icon: const Icon(Icons.arrow_forward),
+            label: const Text('Continuar'),
           ),
-        );
-      },
+      ],
     );
   }
 }
@@ -272,33 +199,6 @@ class AuthorizationDocument {
 }
 
 // ─────────────────────────────────────────────
-// TÍTULO DE SECCIÓN
-// ─────────────────────────────────────────────
-
-class _SectionTitle extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _SectionTitle({required this.icon, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Row(
-      children: [
-        Icon(icon, size: 22, color: colorScheme.primary),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
 // DOCUMENTO PENDIENTE
 // ─────────────────────────────────────────────
 
@@ -310,9 +210,10 @@ class _PendingDocumentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return PortalCard(
+      margin: EdgeInsets.zero,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,71 +221,50 @@ class _PendingDocumentCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.pending_actions_outlined,
-                  size: 28,
-                  color: Colors.orange,
-                ),
+              const IconTile(
+                Icons.pending_actions_outlined,
+                size: 52,
+                color: AppColors.warningText,
+                backgroundColor: AppColors.warningSoft,
               ),
 
-              const SizedBox(width: 14),
+              const SizedBox(width: AppSpacing.md),
 
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      document.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Requiere revisión',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                    Text(document.title, style: textTheme.titleSmall),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text('Requiere revisión', style: textTheme.bodySmall),
+                    const SizedBox(height: AppSpacing.sm),
+                    StatusBadge(document.status),
                   ],
                 ),
               ),
-
-              _StatusBadge(status: document.status),
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
 
-          Divider(color: colorScheme.outlineVariant),
+          const Divider(),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
-          Text(
-            document.description,
-            style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-          ),
+          Text(document.description, style: textTheme.bodyMedium),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
 
-          Text('Fecha: ${document.date}', style: const TextStyle(fontSize: 14)),
+          Text('Fecha: ${document.date}', style: textTheme.bodySmall),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               onPressed: onTap,
               icon: const Icon(Icons.arrow_forward),
+              iconAlignment: IconAlignment.end,
               label: const Text('Revisar'),
             ),
           ),
@@ -406,141 +286,36 @@ class _SignedDocumentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return PortalCard(
+      margin: EdgeInsets.zero,
       onTap: onTap,
       child: Row(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.check_circle_outline,
-              color: Colors.green,
-              size: 27,
-            ),
+          const IconTile(
+            Icons.check_circle_outline,
+            size: 52,
+            color: AppColors.successText,
+            backgroundColor: AppColors.successSoft,
           ),
 
-          const SizedBox(width: 14),
+          const SizedBox(width: AppSpacing.md),
 
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  document.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(document.title, style: textTheme.titleSmall),
 
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
 
-                Text(
-                  'Firmado · ${document.date}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text('Firmado · ${document.date}', style: textTheme.bodySmall),
               ],
             ),
           ),
 
-          Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// ESTADO
-// ─────────────────────────────────────────────
-
-class _StatusBadge extends StatelessWidget {
-  final String status;
-
-  const _StatusBadge({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final bool pendiente = status == 'Pendiente';
-
-    final color = pendiente ? Colors.orange : Colors.green;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-// DETALLE
-// ─────────────────────────────────────────────
-
-class _DetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 21, color: colorScheme.primary),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
         ],
       ),
     );

@@ -5,7 +5,11 @@ import 'package:portal_paciente/models/notification.dart';
 import 'appointments_screen.dart';
 import 'laboratory_screen.dart';
 import 'prescriptions_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/icon_tile.dart';
 import '../widgets/portal_card.dart';
+import '../widgets/section_header.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -63,6 +67,7 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final unreadCount = notifications
         .where((notification) => !notification.read)
         .length;
@@ -70,28 +75,15 @@ class NotificationsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Notificaciones')),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.screenPadding,
         children: [
           if (unreadCount > 0) ...[
             PortalCard(
+              margin: EdgeInsets.zero,
               child: Row(
                 children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Icon(
-                      Icons.notifications_active_outlined,
-                      size: 28,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
+                  const IconTile(Icons.notifications_active_outlined, size: 52),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,20 +91,12 @@ class NotificationsScreen extends StatelessWidget {
                         Text(
                           '$unreadCount '
                           '${unreadCount == 1 ? 'notificación nueva' : 'notificaciones nuevas'}',
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: textTheme.titleSmall,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           'Tienes información nueva para revisar.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
+                          style: textTheme.bodySmall,
                         ),
                       ],
                     ),
@@ -120,19 +104,14 @@ class NotificationsScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
           ],
 
-          const Text(
-            'Tus notificaciones',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 12),
+          const SectionHeader('Tus notificaciones'),
 
           ...notifications.map(
             (notification) => Padding(
-              padding: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
               child: _NotificationCard(
                 notification: notification,
                 onTap: () {
@@ -142,7 +121,7 @@ class NotificationsScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
         ],
       ),
     );
@@ -216,32 +195,25 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final bool unread = !notification.read;
 
     return PortalCard(
+      margin: EdgeInsets.zero,
       onTap: onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: notification.read
-                  ? colorScheme.surfaceContainerHighest
-                  : colorScheme.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              _getIcon(),
-              size: 28,
-              color: notification.read
-                  ? colorScheme.onSurfaceVariant
-                  : colorScheme.primary,
-            ),
+          IconTile(
+            _getIcon(),
+            size: 52,
+            color: unread ? AppColors.primary : AppColors.textSecondary,
+            backgroundColor: unread
+                ? AppColors.primarySoft
+                : AppColors.surfaceMuted,
           ),
 
-          const SizedBox(width: 14),
+          const SizedBox(width: AppSpacing.md),
 
           Expanded(
             child: Column(
@@ -253,50 +225,39 @@ class _NotificationCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         notification.title,
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: notification.read
-                              ? FontWeight.w600
-                              : FontWeight.bold,
+                        style: textTheme.titleSmall?.copyWith(
+                          fontWeight: unread
+                              ? FontWeight.w700
+                              : FontWeight.w600,
                         ),
                       ),
                     ),
 
-                    if (!notification.read) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 10,
-                        height: 10,
-                        margin: const EdgeInsets.only(top: 5),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary,
-                          shape: BoxShape.circle,
+                    if (unread) ...[
+                      const SizedBox(width: AppSpacing.sm),
+                      Semantics(
+                        label: 'No leída',
+                        child: Container(
+                          width: 12,
+                          height: 12,
+                          margin: const EdgeInsets.only(top: 6),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
                     ],
                   ],
                 ),
 
-                const SizedBox(height: 7),
+                const SizedBox(height: AppSpacing.sm),
 
-                Text(
-                  notification.message,
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.4,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(notification.message, style: textTheme.bodyMedium),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.sm),
 
-                Text(
-                  notification.date,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                Text(notification.date, style: textTheme.bodySmall),
               ],
             ),
           ),

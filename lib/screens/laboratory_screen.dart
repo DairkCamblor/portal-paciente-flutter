@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:portal_paciente/models/exam.dart';
 import 'pdf_viewer_screen.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/icon_tile.dart';
+import '../widgets/info_row.dart';
 import '../widgets/portal_card.dart';
 
 class LaboratoryScreen extends StatelessWidget {
@@ -51,35 +54,38 @@ class LaboratoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Laboratorio')),
       body: ListView.builder(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.screenPadding,
         itemCount: examenes.length,
         itemBuilder: (context, index) {
           final examen = examenes[index];
 
-          return _LaboratoryCard(
-            numero: examen.id,
-            fecha: examen.date,
-            medico: examen.requestingDoctor,
-            servicio: examen.service,
-            atencion: examen.attention,
-            onTap: () {
-              if (examen.pdfPath == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('El resultado aún no está disponible.'),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+            child: _LaboratoryCard(
+              numero: examen.id,
+              fecha: examen.date,
+              medico: examen.requestingDoctor,
+              servicio: examen.service,
+              atencion: examen.attention,
+              onTap: () {
+                if (examen.pdfPath == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('El resultado aún no está disponible.'),
+                    ),
+                  );
+                  return;
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        PdfViewerScreen(pdfPath: examen.pdfPath!),
                   ),
                 );
-                return;
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PdfViewerScreen(pdfPath: examen.pdfPath!),
-                ),
-              );
-            },
+              },
+            ),
           );
         },
       ),
@@ -106,47 +112,58 @@ class _LaboratoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return PortalCard(
+      margin: EdgeInsets.zero,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.science_outlined,
-                  size: 28,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
+              const IconTile(Icons.science_outlined, size: 52),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
                 child: Text(
                   'Examen de laboratorio',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
 
-          _InfoRow(label: 'N.º de examen', value: numero),
-          _InfoRow(label: 'Fecha', value: fecha),
-          _InfoRow(label: 'Médico solicitante', value: medico),
-          _InfoRow(label: 'Servicio', value: servicio),
-          _InfoRow(label: 'Atención', value: atencion),
+          const Divider(),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.md),
+
+          InfoRow(
+            icon: Icons.numbers_outlined,
+            label: 'N.º de examen',
+            value: numero,
+          ),
+          InfoRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'Fecha',
+            value: fecha,
+          ),
+          InfoRow(
+            icon: Icons.person_outline,
+            label: 'Médico solicitante',
+            value: medico,
+          ),
+          InfoRow(
+            icon: Icons.medical_services_outlined,
+            label: 'Servicio',
+            value: servicio,
+          ),
+          InfoRow(
+            icon: Icons.assignment_outlined,
+            label: 'Atención',
+            value: atencion,
+          ),
+
+          const SizedBox(height: AppSpacing.xs),
 
           SizedBox(
             width: double.infinity,
@@ -154,44 +171,6 @@ class _LaboratoryCard extends StatelessWidget {
               onPressed: onTap,
               icon: const Icon(Icons.picture_as_pdf_outlined),
               label: const Text('Ver resultado'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _InfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(
-              label,
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
         ],

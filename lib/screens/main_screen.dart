@@ -27,8 +27,8 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: indiceActual,
-        children: [
-          const HomeScreen(),
+        children: [ 
+        const HomeScreen(),
           const AppointmentsScreen(),
           ProfileScreen(patient: patient),
         ],

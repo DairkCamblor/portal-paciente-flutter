@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:portal_paciente/models/appointment.dart';
 
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/icon_tile.dart';
+import '../widgets/info_row.dart';
+import '../widgets/portal_card.dart';
+import '../widgets/section_header.dart';
+
 class AppointmentsScreen extends StatefulWidget {
   const AppointmentsScreen({super.key});
 
@@ -39,48 +46,36 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       appBar: AppBar(title: const Text('Mis horas')),
 
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.screenPadding,
         children: [
-          const Text(
-            'Próximas atenciones',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
+          const SectionHeader('Próximas atenciones'),
 
-          const SizedBox(height: 16),
-
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: horas.length,
-            itemBuilder: (context, index) {
-              final hora = horas[index];
-
-              return _AppointmentCard(
+          for (final hora in horas)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: _AppointmentCard(
                 specialty: hora.specialty,
                 doctor: hora.doctor,
                 date: hora.date,
                 time: hora.time,
                 location: hora.location,
                 icon: Icons.medical_services_outlined,
-              );
-            },
-          ),
+              ),
+            ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.md),
 
-          const Text(
-            'Historial',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
+          const SectionHeader('Historial'),
 
-          const SizedBox(height: 16),
-
-          _HistoryItem(
+          const _HistoryItem(
             specialty: 'Medicina General',
             date: '02 de agosto de 2026',
           ),
 
-          _HistoryItem(specialty: 'Laboratorio', date: '15 de julio de 2026'),
+          const _HistoryItem(
+            specialty: 'Laboratorio',
+            date: '15 de julio de 2026',
+          ),
         ],
       ),
     );
@@ -106,52 +101,52 @@ class _AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 32),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    specialty,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+    return PortalCard(
+      margin: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              IconTile(icon, size: 52),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
+                  specialty,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            Text(doctor),
-
-            const SizedBox(height: 6),
-
-            Text('$date · $time'),
-
-            const SizedBox(height: 6),
-
-            Text(location),
-
-            const SizedBox(height: 16),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () {},
-                child: const Text('Ver detalles'),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
+
+          const SizedBox(height: AppSpacing.lg),
+
+          const Divider(),
+
+          const SizedBox(height: AppSpacing.md),
+
+          InfoRow(
+            icon: Icons.person_outline,
+            label: 'Profesional',
+            value: doctor,
+          ),
+
+          InfoRow(
+            icon: Icons.event_outlined,
+            label: 'Fecha y hora',
+            value: '$date · $time',
+          ),
+
+          InfoRow(
+            icon: Icons.location_on_outlined,
+            label: 'Lugar',
+            value: location,
+          ),
+
+          const SizedBox(height: AppSpacing.xs),
+
+          OutlinedButton(onPressed: () {}, child: const Text('Ver detalles')),
+        ],
       ),
     );
   }
@@ -165,10 +160,16 @@ class _HistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return ListTile(
-      leading: const Icon(Icons.check_circle_outline),
-      title: Text(specialty),
-      subtitle: Text(date),
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.check_circle_outline, color: AppColors.success),
+      title: Text(
+        specialty,
+        style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+      ),
+      subtitle: Text(date, style: textTheme.bodySmall),
     );
   }
 }

@@ -4,7 +4,11 @@ import 'package:portal_paciente/models/prescription.dart';
 
 import 'prescription_detail_screen.dart';
 
-import 'package:portal_paciente/widgets/portal_card.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/icon_tile.dart';
+import '../widgets/portal_card.dart';
+import '../widgets/status_message.dart';
 
 class PrescriptionsScreen extends StatelessWidget {
   const PrescriptionsScreen({super.key});
@@ -168,13 +172,13 @@ class PrescriptionsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Mis Recetas')),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.screenPadding,
         itemCount: recetas.length,
         itemBuilder: (context, index) {
           final receta = recetas[index];
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
             child: _PrescriptionCard(
               prescription: receta,
               onTap: () {
@@ -202,11 +206,12 @@ class _PrescriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     final bool allDelivered = prescription.pendingMedications == 0;
 
     return PortalCard(
+      margin: EdgeInsets.zero,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,21 +219,9 @@ class _PrescriptionCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Icon(
-                  Icons.medication_outlined,
-                  color: colorScheme.primary,
-                  size: 28,
-                ),
-              ),
+              const IconTile(Icons.medication_outlined, size: 52),
 
-              const SizedBox(width: 14),
+              const SizedBox(width: AppSpacing.md),
 
               Expanded(
                 child: Column(
@@ -236,93 +229,52 @@ class _PrescriptionCard extends StatelessWidget {
                   children: [
                     Text(
                       'Receta N.º ${prescription.id}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: textTheme.titleSmall,
                     ),
 
-                    const SizedBox(height: 5),
+                    const SizedBox(height: AppSpacing.xs),
 
-                    Text(
-                      prescription.requestDate,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
-                    ),
+                    Text(prescription.requestDate, style: textTheme.bodySmall),
                   ],
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.lg),
 
           const Divider(),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           Text(
             prescription.professional,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: AppSpacing.xs),
 
-          Text(
-            prescription.location,
-            style: const TextStyle(fontSize: 14, color: Colors.black54),
+          Text(prescription.location, style: textTheme.bodySmall),
+
+          const SizedBox(height: AppSpacing.lg),
+
+          StatusMessage(
+            '${prescription.deliveredMedications} '
+            'de ${prescription.totalMedications} '
+            'medicamentos completamente entregados',
+            style: allDelivered
+                ? AppColors.statusSigned
+                : AppColors.statusPending,
           ),
 
-          const SizedBox(height: 16),
-
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: allDelivered
-                  ? Colors.green.withValues(alpha: 0.10)
-                  : Colors.orange.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  allDelivered
-                      ? Icons.check_circle_outline
-                      : Icons.pending_actions_outlined,
-                  size: 22,
-                  color: allDelivered ? Colors.green : Colors.orange,
-                ),
-
-                const SizedBox(width: 10),
-
-                Expanded(
-                  child: Text(
-                    '${prescription.deliveredMedications} '
-                    'de ${prescription.totalMedications} '
-                    'medicamentos completamente entregados',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: allDelivered
-                          ? Colors.green.shade800
-                          : Colors.orange.shade800,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
 
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               onPressed: onTap,
               icon: const Icon(Icons.arrow_forward),
+              iconAlignment: IconAlignment.end,
               label: const Text('Ver detalle'),
             ),
           ),

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../theme/app_spacing.dart';
+import '../widgets/brand_header.dart';
+import '../widgets/screen_header.dart';
 import 'main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,101 +18,115 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController contrasenaController = TextEditingController();
 
   @override
+  void dispose() {
+    rutController.dispose();
+    contrasenaController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.local_hospital, size: 80),
+      body: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(
+          children: [
+            const BrandHeader(compact: true),
 
-              const SizedBox(height: 24),
-
-              const Text(
-                'Portal del Paciente',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 8),
-
-              const Text('Ingresa a tu cuenta', style: TextStyle(fontSize: 16)),
-
-              const SizedBox(height: 32),
-
-              TextField(
-                controller: rutController,
-                decoration: InputDecoration(
-                  labelText: 'RUT',
-                  hintText: '12.345.678-9',
-                  prefixIcon: const Icon(Icons.badge),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    AppSpacing.xl,
+                    AppSpacing.xl,
+                    AppSpacing.xl + bottomInset,
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: contrasenaController,
-                obscureText: !mostrarContrasena,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                  prefixIcon: const Icon(Icons.lock),
-
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        mostrarContrasena = !mostrarContrasena;
-                      });
-                    },
-                    icon: Icon(
-                      mostrarContrasena
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                    ),
-                  ),
-
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainScreen(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const ScreenHeader(
+                        'Portal del Paciente',
+                        subtitle: 'Ingresa a tu cuenta',
+                        padding: EdgeInsets.only(bottom: AppSpacing.xl),
                       ),
-                    );
-                    //En este punto, puedes agregar la lógica de autenticación y validación de credenciales.
-                    //print('RUT: ${rutController.text}');
-                    //print('Contraseña: ${contrasenaController.text}');
-                  },
-                  child: const Text(
-                    'INGRESAR',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
+                      TextField(
+                        controller: rutController,
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'RUT',
+                          hintText: '12.345.678-9',
+                          prefixIcon: Icon(Icons.badge_outlined),
+                        ),
+                      ),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      TextField(
+                        controller: contrasenaController,
+                        obscureText: !mostrarContrasena,
+                        textInputAction: TextInputAction.done,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            tooltip: mostrarContrasena
+                                ? 'Ocultar contraseña'
+                                : 'Mostrar contraseña',
+                            onPressed: () {
+                              setState(() {
+                                mostrarContrasena = !mostrarContrasena;
+                              });
+                            },
+                            icon: Icon(
+                              mostrarContrasena
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: AppSpacing.xl),
+
+                      FilledButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MainScreen(),
+                            ),
+                          );
+                          //En este punto, puedes agregar la lógica de autenticación y validación de credenciales.
+                          //print('RUT: ${rutController.text}');
+                          //print('Contraseña: ${contrasenaController.text}');
+                        },
+                        child: const Text('Ingresar'),
+                      ),
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      const Divider(),
+
+                      const SizedBox(height: AppSpacing.sm),
+
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          '¿No tienes una cuenta? Registrarme',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 16),
-
-              TextButton(
-                onPressed: () {},
-                child: const Text('¿No tienes una cuenta? Registrarme'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
