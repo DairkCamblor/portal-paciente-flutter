@@ -1,4 +1,4 @@
-# 🏥 Portal del Paciente
+#  Portal del Paciente
 
 Prototipo de aplicación móvil desarrollado con **Flutter y Dart** para el Hospital Regional Dr. Juan Noé Crevani.
 
@@ -20,6 +20,3 @@ Prototipo de aplicación móvil desarrollado con **Flutter y Dart** para el Hosp
 flutter pub get
 flutter run
 ```
-
-### Estado
-Prototipo visual en desarrollo, con datos de demostración. La integración con sistemas hospitalarios y el backend están pendientes.
