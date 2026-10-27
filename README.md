@@ -1,17 +1,25 @@
-# portal_paciente
+# 🏥 Portal del Paciente
 
-A new Flutter project.
+Prototipo de aplicación móvil desarrollado con **Flutter y Dart** para el Hospital Regional Dr. Juan Noé Crevani.
 
-## Getting Started
+### Funcionalidades
+- Gestión visual de citas y turnos.
+- Perfil del paciente.
+- Consulta de exámenes y recetas.
+- Interconsultas y derivaciones.
+- Autorizaciones, firmas y notificaciones.
 
-This project is a starting point for a Flutter application.
+### Tecnologías
+- Flutter y Dart
+- Material Design
+- Git y GitHub
 
-A few resources to get you started if this is your first Flutter project:
+### Ejecutar el proyecto
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Estado
+Prototipo visual en desarrollo, con datos de demostración. La integración con sistemas hospitalarios y el backend están pendientes.
